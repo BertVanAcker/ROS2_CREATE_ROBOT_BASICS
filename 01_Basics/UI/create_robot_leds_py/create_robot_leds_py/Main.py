@@ -28,6 +28,7 @@ class RobotLights():
 
         # -- output -- #
         self.lights_publisher = self.create_publisher(LightringLeds, 'cmd_lightring', 10)
+        self.lights_publisher  # prevent unused variable warning
 
     def setLights(self,color):
         # -- Format message -- #
