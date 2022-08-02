@@ -53,43 +53,13 @@ class DockerNode(Node):
     def undock_send_goal(self):
         goal_msg = Undock.Goal()
         self.undock_action_client.wait_for_server()
-        goal_future = self.undock_action_client.send_goal(goal_msg)
+        undock_goal_result = self.undock_action_client.send_goal(goal_msg)
         
-        self.get_logger().info('waiting for undocking sequence to finish...')
-        
-        self.undock_goal_handle = goal_future.result()
-
-        if not self.undock_goal_handle.accepted:
-            self.get_logger().info('Undocking of the robot FAILED - undock goal rejected')
-            return
-        
-        while self.undock_status != GoalStatus.STATUS_SUCCEEDED:
-            time.sleep(0.1)
-        
-
-        
-        
-    def isUndockComplete(self):
-        """
-        Get status of Undock action.
-        :return: ``True`` if undocked, ``False`` otherwise.
-        """
-        self.get_logger().info('Current state :'+ self.undock_result_future.result().status.__str__())
-        if self.undock_result_future is None or not self.undock_result_future:
-            return True
-
-        rclpy.spin_until_future_complete(self, self.undock_result_future, timeout_sec=0.1)
-
-        if self.undock_result_future.result():
-            self.undock_status = self.undock_result_future.result().status
-            if self.undock_status != GoalStatus.STATUS_SUCCEEDED:
-                self.get_logger().info(f'Goal with failed with status code: {self.status}')
-                return True
+        if undock_goal_result.result.is_docked:
+            self.get_logger().info('Undocking of the robot FAILED...')
         else:
-            return False
-
-        self.get_logger().info('Undocking of the robot SUCCEEDED')
-        return True
+            self.get_logger().info('Undocking of the robot SUCCEEDED')
+        
     
     def dock(self):
         """Perform Undock action."""
