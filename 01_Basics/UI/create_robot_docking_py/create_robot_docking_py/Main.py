@@ -67,6 +67,7 @@ class DockerNode(Node):
             return
 
         self.undock_result_future = self.undock_goal_handle.get_result_async()
+        self.info('Async undocking sequence ordered...')
         
     def isUndockComplete(self):
         """
@@ -86,7 +87,7 @@ class DockerNode(Node):
         else:
             return False
 
-        self.get_logger().info('Undocking of the robot SUCCEEDED')
+        self.info('Undocking of the robot SUCCEEDED')
         return True
     
     def dock(self):
@@ -111,6 +112,7 @@ class DockerNode(Node):
             return
 
         self.dock_result_future = self.dock_goal_handle.get_result_async()
+        self.info('Async docking sequence ordered...')
 
     def isDockComplete(self):
         """
@@ -130,7 +132,7 @@ class DockerNode(Node):
         else:
             return False
 
-        self.get_logger().info('Docking of the robot SUCCEEDED')
+        self.info('Docking of the robot SUCCEEDED')
         return True
     
 
