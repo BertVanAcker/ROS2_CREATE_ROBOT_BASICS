@@ -19,9 +19,11 @@ class ColorPalette():
         self.white = LedColor(red=255,green=255,blue=255)
         self.grey = LedColor(red=189,green=189,blue=189)
 
-class RobotLights():
+class RobotLights(Node):
     """ Helper Class to use the robot leds"""
     def __init__(self):
+        super().__init__('RobotLights node')
+
         # -- system attributes -- #
         self.override_system = False
         self.lightring = LightringLeds()
