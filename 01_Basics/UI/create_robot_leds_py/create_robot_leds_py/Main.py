@@ -22,7 +22,7 @@ class ColorPalette():
 class RobotLights(Node):
     """ Helper Class to use the robot leds"""
     def __init__(self):
-        super().__init__('RobotLights node')
+        super().__init__('RobotLights_node')
 
         # -- system attributes -- #
         self.override_system = False
