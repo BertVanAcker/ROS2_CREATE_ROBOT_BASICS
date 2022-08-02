@@ -58,9 +58,9 @@ class DockerNode(Node):
         self.undock_action_client.wait_for_server()
         goal_future = self.undock_action_client.send_goal_async(goal_msg)
         
-        
-        rclpy.spin_until_future_complete(self, goal_future)
         self.info('Async undocking sequence ordered...')
+        rclpy.spin_until_future_complete(self, goal_future)
+        
 
         self.undock_goal_handle = goal_future.result()
 
@@ -76,6 +76,7 @@ class DockerNode(Node):
         Get status of Undock action.
         :return: ``True`` if undocked, ``False`` otherwise.
         """
+        self.info('Current state :'+ self.undock_result_future.result().status.__str__())
         if self.undock_result_future is None or not self.undock_result_future:
             return True
 
@@ -105,9 +106,9 @@ class DockerNode(Node):
         self.dock_action_client.wait_for_server()
         goal_future = self.dock_action_client.send_goal_async(goal_msg)
         
-        
-        rclpy.spin_until_future_complete(self, goal_future)
         self.info('Async docking sequence ordered...')
+        rclpy.spin_until_future_complete(self, goal_future)
+        
 
         self.dock_goal_handle = goal_future.result()
 
@@ -123,6 +124,7 @@ class DockerNode(Node):
         Get status of Dock action.
         :return: ``True`` if docked, ``False`` otherwise.
         """
+        self.info('Current state :'+ self.undock_result_future.result().status.__str__())
         if self.dock_result_future is None or not self.dock_result_future:
             return True
 
