@@ -58,7 +58,7 @@ class DockerNode(Node):
         self.undock_action_client.wait_for_server()
         goal_future = self.undock_action_client.send_goal_async(goal_msg)
         
-        self.info('Async undocking sequence ordered...')
+        self.get_logger().info('Async undocking sequence ordered...')
         rclpy.spin_until_future_complete(self, goal_future)
         
 
@@ -76,7 +76,7 @@ class DockerNode(Node):
         Get status of Undock action.
         :return: ``True`` if undocked, ``False`` otherwise.
         """
-        self.info('Current state :'+ self.undock_result_future.result().status.__str__())
+        self.get_logger().info('Current state :'+ self.undock_result_future.result().status.__str__())
         if self.undock_result_future is None or not self.undock_result_future:
             return True
 
@@ -85,12 +85,12 @@ class DockerNode(Node):
         if self.undock_result_future.result():
             self.undock_status = self.undock_result_future.result().status
             if self.undock_status != GoalStatus.STATUS_SUCCEEDED:
-                self.info(f'Goal with failed with status code: {self.status}')
+                self.get_logger().info(f'Goal with failed with status code: {self.status}')
                 return True
         else:
             return False
 
-        self.info('Undocking of the robot SUCCEEDED')
+        self.get_logger().info('Undocking of the robot SUCCEEDED')
         return True
     
     def dock(self):
@@ -106,7 +106,7 @@ class DockerNode(Node):
         self.dock_action_client.wait_for_server()
         goal_future = self.dock_action_client.send_goal_async(goal_msg)
         
-        self.info('Async docking sequence ordered...')
+        self.get_logger().info('Async docking sequence ordered...')
         rclpy.spin_until_future_complete(self, goal_future)
         
 
@@ -124,7 +124,7 @@ class DockerNode(Node):
         Get status of Dock action.
         :return: ``True`` if docked, ``False`` otherwise.
         """
-        self.info('Current state :'+ self.undock_result_future.result().status.__str__())
+        self.get_logger().info('Current state :'+ self.undock_result_future.result().status.__str__())
         if self.dock_result_future is None or not self.dock_result_future:
             return True
 
@@ -133,12 +133,12 @@ class DockerNode(Node):
         if self.dock_result_future.result():
             self.dock_status = self.dock_result_future.result().status
             if self.dock_status != GoalStatus.STATUS_SUCCEEDED:
-                self.info(f'Goal with failed with status code: {self.status}')
+                self.get_logger().info(f'Goal with failed with status code: {self.status}')
                 return True
         else:
             return False
 
-        self.info('Docking of the robot SUCCEEDED')
+        self.get_logger().info('Docking of the robot SUCCEEDED')
         return True
     
 
