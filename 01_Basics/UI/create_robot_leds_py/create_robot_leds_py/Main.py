@@ -83,8 +83,6 @@ def main(args=None):
         rclpy.spin(Lights)
     except KeyboardInterrupt:
         print('Caught keyboard interrupt')
-    except BaseException:
-        print('Exception in dance:', file=sys.stderr)
     finally:
         # Destroy the node explicitly
         # (optional - otherwise it will be done automatically
