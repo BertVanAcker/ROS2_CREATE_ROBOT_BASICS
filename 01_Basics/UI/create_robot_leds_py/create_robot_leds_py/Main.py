@@ -68,9 +68,9 @@ class LightingNode(Node):
     def button_callback(self, msg):
         #identification of the pushed button
         if msg.button_1.is_pressed:
-            self.robotLights.setLights(self.colors.green)
+            self.robotLights.setLights([self.colors.green, self.colors.green, self.colors.green, self.colors.green, self.colors.green, self.colors.green])
         if msg.button_2.is_pressed:
-            self.robotLights.setLights(self.colors.red)
+            self.robotLights.setLights([self.colors.red, self.colors.red, self.colors.red, self.colors.red, self.colors.red, self.colors.red])
         if msg.button_power.is_pressed:
             #return led control to robot
             self.robotLights.stopSystemOverride()
