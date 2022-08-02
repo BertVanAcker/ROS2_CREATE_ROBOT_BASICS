@@ -19,7 +19,7 @@ from irobot_create_msgs.msg import Dock
 class DockerNode(Node):
     def __init__(self):
         super().__init__('Docking_node')
-
+        self.get_logger().info('Node setup start')
         # -- system attributes -- #
 
         # -- input -- #
@@ -34,6 +34,7 @@ class DockerNode(Node):
         self.undock_action_client = ActionClient(self, Undock, '/undock')
         self.dock_action_client = ActionClient(self, Dock, '/dock')
 
+        self.get_logger().info('Node setup stop')
 
 
 
@@ -91,14 +92,10 @@ def main(args=None):
         docker.run()
     except KeyboardInterrupt:
         print('Caught keyboard interrupt')
-    finally:
-        # Destroy the node explicitly
-        # (optional - otherwise it will be done automatically
-        # when the garbage collector destroys the node object)
-        if docker:
-            docker.destroy_node()
-        rclpy.shutdown()
-        thread.join()
+
+    docker.destroy_node()
+    rclpy.shutdown()
+    thread.join()
 
 
 if __name__ == '__main__':
