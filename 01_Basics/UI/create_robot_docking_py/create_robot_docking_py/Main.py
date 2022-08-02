@@ -10,7 +10,7 @@ from irobot_create_msgs.msg import InterfaceButtons
 from irobot_create_msgs.msg import LedColor
 from irobot_create_msgs.msg import LightringLeds
 
-from irobot_create_msgs.action import Undock
+from irobot_create_msgs.action import Undock, DockServo
 from irobot_create_msgs.msg import Dock
 
 
@@ -26,13 +26,12 @@ class DockerNode(Node):
         self.subscription = self.create_subscription(InterfaceButtons, 'interface_buttons', self.button_callback, 10)
         self.subscription  # prevent unused variable warning
         self.dock_sub = self.create_subscription(Dock,'/dock',self.dockCallback,qos_profile_sensor_data)
-        self.dock_sub  # prevent unused variable warning
 
         # -- output -- #
 
         # -- actions -- #
         self.undock_action_client = ActionClient(self, Undock, '/undock')
-        self.dock_action_client = ActionClient(self, Dock, '/dock')
+        self.dock_action_client = ActionClient(self, DockServo, '/dock')
 
         self.get_logger().info('Node setup stop')
 
@@ -59,7 +58,7 @@ class DockerNode(Node):
         if not self.is_docked:
             self.get_logger().info('Docking the robot')
             self.dock_action_client.wait_for_server()
-            dock_goal_result = self.dock_action_client.send_goal(Dock.Goal())
+            dock_goal_result = self.dock_action_client.send_goal(DockServo.Goal())
             if dock_goal_result.result.is_docked:
                 self.get_logger().info('Docking of the robot FAILED')
         else:
