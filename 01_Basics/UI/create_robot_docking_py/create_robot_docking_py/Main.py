@@ -1,3 +1,5 @@
+import threading
+import time
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
@@ -16,7 +18,7 @@ from irobot_create_msgs.msg import Dock
 
 class DockerNode(Node):
     def __init__(self):
-        super().__init__('RobotLights_node')
+        super().__init__('Docking_node')
 
         # -- system attributes -- #
 
@@ -73,10 +75,20 @@ class DockerNode(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    docker=None
+    docker = DockerNode()
+
+    # Spin rclpy on separate thread
+    thread = threading.Thread(target=rclpy.spin, args=(docker,), daemon=True)
+    thread.start()
+
+    # Allow time for other nodes to start
+    time.sleep(5)
+
+    print('Running Docker node...\n')
+
+
     try:
-        docker = DockerNode()
-        rclpy.spin(docker)
+        docker.run()
     except KeyboardInterrupt:
         print('Caught keyboard interrupt')
     finally:
@@ -86,6 +98,7 @@ def main(args=None):
         if docker:
             docker.destroy_node()
         rclpy.shutdown()
+        thread.join()
 
 
 if __name__ == '__main__':
