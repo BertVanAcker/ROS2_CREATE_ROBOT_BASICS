@@ -19,12 +19,12 @@ setup(
         'Programming Language :: Python',
         'Topic :: Software Development',
     ],
-    description='Getting started with the irobot create buttons',
+    description='Getting started with the irobot create leds',
     license='Apache License, Version 2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'Buttons_basic = create_robot_leds_py.Main:main'
+            'Leds_basic = create_robot_leds_py.Main:main'
         ],
     },
 )

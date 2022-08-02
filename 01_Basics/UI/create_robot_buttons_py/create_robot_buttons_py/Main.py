@@ -4,6 +4,7 @@ from rclpy.node import Node
 from irobot_create_msgs.msg import InterfaceButtons
 
 
+
 class ButtonSubscriber(Node):
 
     def __init__(self):
@@ -14,11 +15,14 @@ class ButtonSubscriber(Node):
     def button_callback(self, msg):
         #identification of the pushed button
         if msg.button_1.is_pressed:
-            self.get_logger().info('Button 1 pressed for "%s" nanoseconds' % msg.button_1.last_pressed_duration.__str__())
+            self.get_logger().info(
+                'Button 1 pressed for "%s" nanoseconds' % msg.button_1.last_pressed_duration.__str__())
         if msg.button_2.is_pressed:
-            self.get_logger().info('Button 2 pressed for "%s" nanoseconds' % msg.button_1.last_pressed_duration.__str__())
+            self.get_logger().info(
+                'Button 2 pressed for "%s" nanoseconds' % msg.button_1.last_pressed_duration.__str__())
         if msg.button_power.is_pressed:
-            self.get_logger().info('Button power pressed for "%s" nanoseconds' % msg.button_1.last_pressed_duration.__str__())
+            self.get_logger().info(
+                'Button power pressed for "%s" nanoseconds' % msg.button_1.last_pressed_duration.__str__())
 
 
 def main(args=None):
