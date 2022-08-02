@@ -10,6 +10,7 @@ from irobot_create_msgs.msg import InterfaceButtons
 from irobot_create_msgs.msg import LedColor
 from irobot_create_msgs.msg import LightringLeds
 
+from action_msgs.msg import GoalStatus
 from irobot_create_msgs.action import Undock, DockServo
 from irobot_create_msgs.msg import Dock
 
