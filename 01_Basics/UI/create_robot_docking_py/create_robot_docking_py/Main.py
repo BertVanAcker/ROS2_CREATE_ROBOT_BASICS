@@ -57,8 +57,10 @@ class DockerNode(Node):
         goal_msg = Undock.Goal()
         self.undock_action_client.wait_for_server()
         goal_future = self.undock_action_client.send_goal_async(goal_msg)
-
+        
+        
         rclpy.spin_until_future_complete(self, goal_future)
+        self.info('Async undocking sequence ordered...')
 
         self.undock_goal_handle = goal_future.result()
 
@@ -67,7 +69,7 @@ class DockerNode(Node):
             return
 
         self.undock_result_future = self.undock_goal_handle.get_result_async()
-        self.info('Async undocking sequence ordered...')
+        
         
     def isUndockComplete(self):
         """
@@ -102,8 +104,10 @@ class DockerNode(Node):
         goal_msg = DockServo.Goal()
         self.dock_action_client.wait_for_server()
         goal_future = self.dock_action_client.send_goal_async(goal_msg)
-
+        
+        
         rclpy.spin_until_future_complete(self, goal_future)
+        self.info('Async docking sequence ordered...')
 
         self.dock_goal_handle = goal_future.result()
 
@@ -112,7 +116,7 @@ class DockerNode(Node):
             return
 
         self.dock_result_future = self.dock_goal_handle.get_result_async()
-        self.info('Async docking sequence ordered...')
+        
 
     def isDockComplete(self):
         """
