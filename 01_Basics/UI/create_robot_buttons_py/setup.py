@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'create_robot_leds_py'
+package_name = 'create_robot_buttons_py'
 
 setup(
     name=package_name,
@@ -24,7 +24,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'Buttons_basic = create_robot_leds_py.Main:main'
+            'Buttons_basic = create_robot_buttons_py.Main:main'
         ],
     },
 )
