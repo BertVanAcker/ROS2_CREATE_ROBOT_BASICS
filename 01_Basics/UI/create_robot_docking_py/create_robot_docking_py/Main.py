@@ -48,9 +48,6 @@ class DockerNode(Node):
         self.get_logger().info('Undocking the robot...')
         self.undock_send_goal()
 
-        while not self.isUndockComplete():
-            time.sleep(0.1)
-
             
     def undock_send_goal(self):
         goal_msg = Undock.Goal()
