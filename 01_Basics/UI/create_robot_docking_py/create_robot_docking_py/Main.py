@@ -21,6 +21,8 @@ class DockerNode(Node):
         super().__init__('Docking_node')
         
         # -- system attributes -- #
+        self.yellow = LedColor(red=255,green=255,blue=0)
+        self.green = LedColor(red=0,green=255,blue=0)
 
         # -- input -- #
         self.subscription = self.create_subscription(InterfaceButtons, 'interface_buttons', self.button_callback, 10)
@@ -28,6 +30,8 @@ class DockerNode(Node):
         self.dock_sub = self.create_subscription(Dock,'/dock',self.dockCallback,qos_profile_sensor_data)
 
         # -- output -- #
+        self.lights_publisher = self.create_publisher(LightringLeds, 'cmd_lightring', 10)
+        self.lights_publisher  # prevent unused variable warning
 
         # -- actions -- #
         self.undock_action_client = ActionClient(self, Undock, '/undock')
@@ -36,7 +40,22 @@ class DockerNode(Node):
         self.get_logger().info('Docking node started.')
 
 
+    def setLights(self,color):
+        # -- Format message -- #
+        self.override_system = True
+        self.lightring.override_system = self.override_system
+        self.lightring.leds = color
 
+        # -- Publish message -- #
+        self.lights_publisher.publish(self.lightring)
+        
+    def stopSystemOverride(self):
+        # -- Format message -- #
+        self.override_system = False
+        self.lightring.override_system = self.override_system
+
+        # -- Publish message -- #
+        self.lights_publisher.publish(self.lightring)
 
     # Dock subscription callback
     def dockCallback(self, msg: Dock):
@@ -46,6 +65,7 @@ class DockerNode(Node):
     def undock(self):
         """Perform Undock action."""
         self.get_logger().info('Undocking the robot...')
+        self.setLights([self.yellow, self.yellow, self.yellow, self.yellow, self.yellow, self.yellow])
         self.undock_send_goal()
 
             
@@ -69,6 +89,7 @@ class DockerNode(Node):
     def get_result_callback(self, future):
         result = future.result().result
         self.get_logger().info('Result: {0}'.format(result.sequence))
+        self.setLights([self.green, self.green, self.green, self.green, self.green, self.green])
         return
         
     def isUndockComplete(self):
