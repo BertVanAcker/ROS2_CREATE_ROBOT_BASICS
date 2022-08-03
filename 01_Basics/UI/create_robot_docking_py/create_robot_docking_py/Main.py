@@ -61,38 +61,30 @@ class DockerNode(Node):
 
     # Dock subscription callback
     def dockCallback(self, msg: Dock):
-        self.setLights([self.green, self.green, self.green, self.green, self.green, self.green])
         self.is_docked = msg.is_docked
     
     # Undock action
     def undock(self):
         """Perform Undock action."""
         self.get_logger().info('Undocking the robot...')
-        self.setLights([self.yellow, self.yellow, self.yellow, self.yellow, self.yellow, self.yellow])
         self.undock_send_goal()
 
             
     def undock_send_goal(self):
+        self.get_logger().infor('Sending goal...')
         goal_msg = Undock.Goal()
         self.undock_action_client.wait_for_server()
         self.goal_future = self.undock_action_client.send_goal_async(goal_msg)
-        self.goal_future.add_done_callback(self.goal_response_callback)
+        
+        self.setLights([self.yellow, self.yellow, self.yellow, self.yellow, self.yellow, self.yellow])
+        while rclpy.ok() and not future.done():
+            rclpy.spin_once(self, timeout_sec=0.01)
+            self.get_logger().info("Wating for action to finish")
+            
+        # -- action finished -- #
+        self.setLights([self.green, self.green, self.green, self.green, self.green, self.green])
 
-    def goal_response_callback(self, future):
-        goal_handle = future.result()
-        if not goal_handle.accepted:
-            self.get_logger().info('Goal rejected :(')
-            return
-
-        self.get_logger().info('Goal accepted :)')
-
-        self._get_result_future = goal_handle.get_result_async()
-        self._get_result_future.add_done_callback(self.get_result_callback)
-
-    def get_result_callback(self, future):
-        result = future.result().result
-        self.get_logger().info('Result: {0}'.format(result.sequence))
-        return
+    
         
     def isUndockComplete(self):
         """
