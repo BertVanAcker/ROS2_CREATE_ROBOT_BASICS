@@ -77,7 +77,7 @@ class DockerNode(Node):
         self.goal_future = self.undock_action_client.send_goal_async(goal_msg)
         
         self.setLights([self.yellow, self.yellow, self.yellow, self.yellow, self.yellow, self.yellow])
-        while rclpy.ok() and not future.done():
+        while rclpy.ok() and not self.goal_future.done():
             rclpy.spin_once(self, timeout_sec=0.01)
             self.get_logger().info("Wating for action to finish")
             
