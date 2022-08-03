@@ -23,6 +23,8 @@ class DockerNode(Node):
         # -- system attributes -- #
         self.yellow = LedColor(red=255,green=255,blue=0)
         self.green = LedColor(red=0,green=255,blue=0)
+        self.override_system = False
+        self.lightring = LightringLeds()
 
         # -- input -- #
         self.subscription = self.create_subscription(InterfaceButtons, 'interface_buttons', self.button_callback, 10)
