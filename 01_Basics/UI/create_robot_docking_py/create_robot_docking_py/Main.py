@@ -156,6 +156,7 @@ class DockerNode(Node):
         else:
             return False
 
+        self.setLights([self.green, self.green, self.green, self.green, self.green, self.green])
         self.get_logger().info('Docking of the robot SUCCEEDED')
         return True
     
