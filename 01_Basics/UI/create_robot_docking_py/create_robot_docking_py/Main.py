@@ -143,6 +143,7 @@ class DockerNode(Node):
         Get status of Dock action.
         :return: ``True`` if docked, ``False`` otherwise.
         """
+        self.setLights([self.green, self.green, self.green, self.green, self.green, self.green])
         if self.dock_result_future is None or not self.dock_result_future:
             return True
 
@@ -156,7 +157,7 @@ class DockerNode(Node):
         else:
             return False
 
-        self.setLights([self.green, self.green, self.green, self.green, self.green, self.green])
+       
         self.get_logger().info('Docking of the robot SUCCEEDED')
         return True
     
