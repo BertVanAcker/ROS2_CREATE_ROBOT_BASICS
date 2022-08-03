@@ -71,7 +71,7 @@ class DockerNode(Node):
 
             
     def undock_send_goal(self):
-        self.get_logger().infor('Sending goal...')
+        self.get_logger().info('Sending goal...')
         goal_msg = Undock.Goal()
         self.undock_action_client.wait_for_server()
         self.goal_future = self.undock_action_client.send_goal_async(goal_msg)
