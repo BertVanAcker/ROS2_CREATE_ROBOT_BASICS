@@ -55,17 +55,24 @@ class DockerNode(Node):
     def undock_send_goal(self):
         goal_msg = Undock.Goal()
         self.undock_action_client.wait_for_server()
-        goal_future = self.undock_action_client.send_goal_async(goal_msg)
+        self.goal_future = self.undock_action_client.send_goal_async(goal_msg)
+        self.goal_future.add_done_callback(self.goal_response_callback)
 
-        rclpy.spin_until_future_complete(self, goal_future)
-
-        self.undock_goal_handle = goal_future.result()
-
-        if not self.undock_goal_handle.accepted:
-            self.get_logger().info('Undocking of the robot FAILED - undock goal rejected')
+    def goal_response_callback(self, future):
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            self.get_logger().info('Goal rejected :(')
             return
 
-        self.undock_result_future = self.undock_goal_handle.get_result_async()
+        self.get_logger().info('Goal accepted :)')
+
+        self._get_result_future = goal_handle.get_result_async()
+        self._get_result_future.add_done_callback(self.get_result_callback)
+
+    def get_result_callback(self, future):
+        result = future.result().result
+        self.get_logger().info('Result: {0}'.format(result.sequence))
+        rclpy.shutdown()
         
     def isUndockComplete(self):
         """
