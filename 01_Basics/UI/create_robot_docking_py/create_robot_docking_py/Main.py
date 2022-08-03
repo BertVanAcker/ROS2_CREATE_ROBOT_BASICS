@@ -61,6 +61,7 @@ class DockerNode(Node):
 
     # Dock subscription callback
     def dockCallback(self, msg: Dock):
+        self.setLights([self.green, self.green, self.green, self.green, self.green, self.green])
         self.is_docked = msg.is_docked
     
     # Undock action
@@ -91,7 +92,6 @@ class DockerNode(Node):
     def get_result_callback(self, future):
         result = future.result().result
         self.get_logger().info('Result: {0}'.format(result.sequence))
-        self.setLights([self.green, self.green, self.green, self.green, self.green, self.green])
         return
         
     def isUndockComplete(self):
@@ -143,7 +143,6 @@ class DockerNode(Node):
         Get status of Dock action.
         :return: ``True`` if docked, ``False`` otherwise.
         """
-        self.setLights([self.green, self.green, self.green, self.green, self.green, self.green])
         if self.dock_result_future is None or not self.dock_result_future:
             return True
 
