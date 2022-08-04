@@ -9,21 +9,6 @@ from rclpy.qos import qos_profile_sensor_data, qos_profile_system_default
 
 
 
-class HAZARDS(Enum):
-    # The Create3 webserver can be used to set a default value for the parameter.
-    BACKUP_LIMIT = 0
-    # The robot has bumped against an obstacle
-    BUMP = 1
-    # The robot detected a cliff
-    CLIFF = 2
-    # The wheels of the robot are stalled against an obstacle
-    STALL = 3
-    # The wheels of the robot are fully dropped
-    WHEEL_DROP = 4
-    # The robot detects an obstacle in close proximity
-    OBJECT_PROXIMITY = 5
-
-
 class KidnapDetector(Node):
 
     def __init__(self):
@@ -48,17 +33,17 @@ class HazardDetector(Node):
         #identification of the robot hazards
         for hazard in msg.detections:
 
-            if hazard.type == 0:#HAZARDS.BACKUP_LIMIT:
+            if hazard.type == 0:
                 self.get_logger().info('Robot is in backup limit')
-            elif hazard.type == 1:#HAZARDS.BUMP:
+            elif hazard.type == 1
                 self.get_logger().info('Robot is bumped')
-            elif hazard.type == HAZARDS.CLIFF:
+            elif hazard.type == 2:
                 self.get_logger().info('Robot detected a cliff')
-            elif hazard.type == HAZARDS.STALL:
+            elif hazard.type == 3:
                 self.get_logger().info('Robot motors are stalled')
-            elif hazard.type == HAZARDS.WHEEL_DROP:
+            elif hazard.type == 4:
                 self.get_logger().info('Robot wheels are not touching the ground')
-            elif hazard.type == HAZARDS.OBJECT_PROXIMITY:
+            elif hazard.type == 5:
                 self.get_logger().info('Robot detects an object very close')
             else:
                 self.get_logger().info('No hazard detected')
@@ -81,7 +66,7 @@ def main(args=None):
 
     hazarddetector = HazardDetector()
     #proximityDetector = ProximityDetector()
-    #kidnapDetector = KidnapDetector()
+    kidnapDetector = KidnapDetector()
 
     rclpy.spin(hazarddetector)
     #rclpy.spin(proximityDetector)
@@ -92,7 +77,7 @@ def main(args=None):
     # when the garbage collector destroys the node object)
     hazarddetector.destroy_node()
     #proximityDetector.destroy_node()
-    #kidnapDetector.destroy_node()
+    kidnapDetector.destroy_node()
     rclpy.shutdown()
 
 
