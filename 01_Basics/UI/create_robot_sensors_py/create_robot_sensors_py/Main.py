@@ -48,9 +48,9 @@ class HazardDetector(Node):
         #identification of the robot hazards
         for hazard in msg.detections:
 
-            if hazard.type == HAZARDS.BACKUP_LIMIT:
+            if hazard.type == 0:#HAZARDS.BACKUP_LIMIT:
                 self.get_logger().info('Robot is in backup limit')
-            elif hazard.type == HAZARDS.BUMP:
+            elif hazard.type == 1:#HAZARDS.BUMP:
                 self.get_logger().info('Robot is bumped')
             elif hazard.type == HAZARDS.CLIFF:
                 self.get_logger().info('Robot detected a cliff')
