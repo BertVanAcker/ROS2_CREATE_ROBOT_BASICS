@@ -47,7 +47,7 @@ class HazardDetector(Node):
 
         #identification of the robot hazards
         for hazard in msg.detections:
-            print(type(hazard.type))
+
             if hazard.type == HAZARDS.BACKUP_LIMIT:
                 self.get_logger().info('Robot is in backup limit')
             elif hazard.type == HAZARDS.BUMP:
@@ -60,7 +60,8 @@ class HazardDetector(Node):
                 self.get_logger().info('Robot wheels are not touching the ground')
             elif hazard.type == HAZARDS.OBJECT_PROXIMITY:
                 self.get_logger().info('Robot detects an object very close')
-
+            else:
+                self.get_logger().info('No hazard detected')
 class ProximityDetector(Node):
 
     def __init__(self):
