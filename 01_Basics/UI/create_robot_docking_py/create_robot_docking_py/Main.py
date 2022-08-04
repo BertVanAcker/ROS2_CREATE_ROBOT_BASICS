@@ -141,7 +141,7 @@ class DockerNode(Node):
         self._send_goal_future.add_done_callback(self.goal_response_callback)
 
         while self.status != GoalStatus.STATUS_SUCCEEDED:
-            rclpy.spin_once(self.dock_action_client)
+            rclpy.spin_once(self)
 
         self.state = State.DOCKED
 
