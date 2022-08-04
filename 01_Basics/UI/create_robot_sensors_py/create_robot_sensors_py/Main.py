@@ -4,6 +4,7 @@ from enum import Enum
 
 from irobot_create_msgs.msg import InterfaceButtons
 from irobot_create_msgs.msg import KidnapStatus,HazardDetectionVector,IrIntensityVector
+from rclpy.qos import qos_profile_sensor_data, qos_profile_system_default
 
 
 
@@ -27,7 +28,7 @@ class KidnapDetector(Node):
 
     def __init__(self):
         super().__init__('kidnap_detector')
-        self.subscription = self.create_subscription(KidnapStatus,'kidnap_status',self.kidnap_callback,10)
+        self.subscription = self.create_subscription(KidnapStatus,'kidnap_status',self.kidnap_callback,qos_profile_sensor_data)
         self.subscription  # prevent unused variable warning
 
     def kidnap_callback(self, msg):
@@ -39,7 +40,7 @@ class HazardDetector(Node):
 
     def __init__(self):
         super().__init__('Hazard_detector')
-        self.subscription = self.create_subscription(HazardDetectionVector,'hazard_detection',self.hazard_callback,10)
+        self.subscription = self.create_subscription(HazardDetectionVector,'hazard_detection',self.hazard_callback,qos_profile_sensor_data)
         self.subscription  # prevent unused variable warning
 
     def hazard_callback(self, msg):
@@ -62,7 +63,7 @@ class ProximityDetector(Node):
 
     def __init__(self):
         super().__init__('Proximity_detector')
-        self.subscription = self.create_subscription(IrIntensityVector,'ir_intensity',self.proximity_callback,10)
+        self.subscription = self.create_subscription(IrIntensityVector,'ir_intensity',self.proximity_callback,qos_profile_sensor_data)
         self.subscription  # prevent unused variable warning
 
     def proximity_callback(self, msg):
