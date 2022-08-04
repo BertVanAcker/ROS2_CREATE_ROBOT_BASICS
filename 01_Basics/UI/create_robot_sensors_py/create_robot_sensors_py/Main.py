@@ -32,7 +32,6 @@ class HazardDetector(Node):
 
         #identification of the robot hazards
         for hazard in msg.detections:
-
             if hazard.type == 1:
                 self.get_logger().info('Robot is bumped')
             elif hazard.type == 2:
