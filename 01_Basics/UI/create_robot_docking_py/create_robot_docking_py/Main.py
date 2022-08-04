@@ -207,28 +207,49 @@ class DockerNode(Node):
 
 
 def main(args=None):
+
     rclpy.init(args=args)
 
-    node = DockerNode()
-
-    # Spin rclpy on separate thread
-    thread = threading.Thread(target=rclpy.spin, args=(node,), daemon=True)
-    thread.start()
-
-    # Allow time for other nodes to start
-    time.sleep(5)
-
-    print('Running Docking node...\n')
-
+    Lights = None
     try:
-        node.run()
+        node = DockerNode()
+        rclpy.spin(node)
     except KeyboardInterrupt:
-        pass
+        print('Caught keyboard interrupt')
+    finally:
+        # Destroy the node explicitly
+        # (optional - otherwise it will be done automatically
+        # when the garbage collector destroys the node object)
+        if node:
+            node.destroy_node()
+        rclpy.shutdown()
 
-    node.destroy_node()
-    rclpy.shutdown()
 
-    thread.join()
+
+
+
+    # rclpy.init(args=args)
+    #
+    # node = DockerNode()
+    #
+    # # Spin rclpy on separate thread
+    # thread = threading.Thread(target=rclpy.spin, args=(node,), daemon=True)
+    # thread.start()
+    #
+    # # Allow time for other nodes to start
+    # time.sleep(5)
+    #
+    # print('Running Docking node...\n')
+    #
+    # try:
+    #     node.run()
+    # except KeyboardInterrupt:
+    #     pass
+    #
+    # node.destroy_node()
+    # rclpy.shutdown()
+    #
+    # thread.join()
 
     #try:
     #    docker = DockerNode()
