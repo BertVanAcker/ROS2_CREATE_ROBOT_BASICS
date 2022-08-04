@@ -62,7 +62,7 @@ class ProximityDetector(Node):
 
     def __init__(self):
         super().__init__('Proximity_detector')
-        self.subscription = self.create_subscription(IrIntensityVector,'ir_intensity ',self.proximity_callback,10)
+        self.subscription = self.create_subscription(IrIntensityVector,'ir_intensity',self.proximity_callback,10)
         self.subscription  # prevent unused variable warning
 
     def proximity_callback(self, msg):
