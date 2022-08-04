@@ -3,6 +3,7 @@ import time
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
+from action_msgs.msg import GoalStatus
 from rclpy.qos import qos_profile_sensor_data, qos_profile_system_default
 import sys
 
@@ -31,6 +32,7 @@ class DockerNode(Node):
         # -- system attributes -- #
         self.docksub_ready = False
         self.state = State.UNDEFINED
+        self.status = GoalStatus.STATUS_EXECUTING
 
         self.red = LedColor(red=255, green=0, blue=0)
         self.green = LedColor(red=0, green=255, blue=0)
@@ -125,73 +127,82 @@ class DockerNode(Node):
             print('Undocking failed')
         self.state = State.UNDOCKED
 
-    # Undock action
-    #def undock(self):
-    #    """Perform Undock action."""
-    #    self.get_logger().info('Undocking the robot...')
-    #    self.undock_send_goal()
 
-            
-    #def undock_send_goal(self):
-    #    self.get_logger().info('Sending goal...')
-    #    goal_msg = Undock.Goal()
-    #    self.undock_action_client.wait_for_server()
-    #    self.goal_future = self.undock_action_client.send_goal_async(goal_msg)
-    #
-    #    self.setLights([self.yellow, self.yellow, self.yellow, self.yellow, self.yellow, self.yellow])
-    #    while rclpy.ok() and not self.goal_future.done():
-    #        rclpy.spin_once(self, timeout_sec=0.01)
-    #        self.get_logger().info("Wating for action to finish")
-
-    #   self.state = State.UNDOCKED
     
 
     def dock(self):
         """Perform Undock action."""
         self.get_logger().info('Docking the robot...')
-        self.dock_send_goal()
 
-        while not self.isDockComplete():
-            time.sleep(0.1)
+        goal_msg = DockServo.Goal()
+        self.dock_action_client.wait_for_server()
+
+        self._send_goal_future = self._action_client.send_goal_async(goal_msg, feedback_callback=self.feedback_callback)
+        self._send_goal_future.add_done_callback(self.goal_response_callback)
+
+        while self.status != GoalStatus.STATUS_SUCCEEDED:
+            rclpy.spin_once(self)
 
         self.state = State.DOCKED
 
-    def dock_send_goal(self):
-        goal_msg = DockServo.Goal()
-        self.dock_action_client.wait_for_server()
-        goal_future = self.dock_action_client.send_goal_async(goal_msg)
 
-        rclpy.spin_until_future_complete(self, goal_future)
-
-        self.dock_goal_handle = goal_future.result()
-
-        if not self.dock_goal_handle.accepted:
-            self.get_logger().info('Docking of the robot FAILED - Dock goal rejected')
+    def goal_response_callback(self, future):
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            self.get_logger().info('Goal rejected :(')
             return
 
-        self.dock_result_future = self.dock_goal_handle.get_result_async()
+        self.get_logger().info('Goal accepted :)')
 
-    def isDockComplete(self):
-        """
-        Get status of Dock action.
-        :return: ``True`` if docked, ``False`` otherwise.
-        """
-        if self.dock_result_future is None or not self.dock_result_future:
-            return True
+        self._get_result_future = goal_handle.get_result_async()
+        self._get_result_future.add_done_callback(self.get_result_callback)
 
-        rclpy.spin_until_future_complete(self, self.dock_result_future, timeout_sec=0.1)
+    def get_result_callback(self, future):
+        result = future.result().result
+        self.get_logger().info('Result: {0}'.format(result.sequence))
+        self.status = GoalStatus.STATUS_SUCCEEDED
 
-        if self.dock_result_future.result():
-            self.dock_status = self.dock_result_future.result().status
-            if self.dock_status != GoalStatus.STATUS_SUCCEEDED:
-                self.info(f'Goal with failed with status code: {self.status}')
-                return True
-        else:
-            return False
 
-       
-        self.get_logger().info('Docking of the robot SUCCEEDED')
-        return True
+    def feedback_callback(self, feedback_msg):
+        feedback = feedback_msg.feedback
+        self.get_logger().info('Received feedback: {0}'.format(feedback.partial_sequence))
+
+
+    # def dock_send_goal(self):
+    #     goal_msg = DockServo.Goal()
+    #     self.dock_action_client.wait_for_server()
+    #     goal_future = self.dock_action_client.send_goal_async(goal_msg)
+    #
+    #     rclpy.spin_until_future_complete(self, goal_future)
+    #
+    #     self.dock_goal_handle = goal_future.result()
+    #
+    #     if not self.dock_goal_handle.accepted:
+    #         self.get_logger().info('Docking of the robot FAILED - Dock goal rejected')
+    #         return
+    #
+    #     self.dock_result_future = self.dock_goal_handle.get_result_async()
+    #
+    # def isDockComplete(self):
+    #     """
+    #     Get status of Dock action.
+    #     :return: ``True`` if docked, ``False`` otherwise.
+    #     """
+    #     if self.dock_result_future is None or not self.dock_result_future:
+    #         return True
+    #
+    #     rclpy.spin_until_future_complete(self, self.dock_result_future, timeout_sec=0.1)
+    #
+    #     if self.dock_result_future.result():
+    #         self.dock_status = self.dock_result_future.result().status
+    #         if self.dock_status != GoalStatus.STATUS_SUCCEEDED:
+    #             self.info(f'Goal with failed with status code: {self.status}')
+    #             return True
+    #     else:
+    #         return False
+    #
+    #     self.get_logger().info('Docking of the robot SUCCEEDED')
+    #     return True
 
 
 
