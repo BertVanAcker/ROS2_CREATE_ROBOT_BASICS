@@ -44,6 +44,8 @@ class HazardDetector(Node):
         self.subscription  # prevent unused variable warning
 
     def hazard_callback(self, msg):
+        if len(msg.detections)!= 0:
+            self.get_logger().info('Hazard detected')
         #identification of the robot hazards
         for hazard in msg.detections:
             if hazard.type == HAZARDS.BACKUP_LIMIT:
@@ -76,19 +78,19 @@ class ProximityDetector(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    #hazardDetector = HazardDetector()
-    proximityDetector = ProximityDetector()
+    hazarddetector = HazardDetector()
+    #proximityDetector = ProximityDetector()
     #kidnapDetector = KidnapDetector()
 
-    #rclpy.spin(hazardDetector)
-    rclpy.spin(proximityDetector)
+    rclpy.spin(hazarddetector)
+    #rclpy.spin(proximityDetector)
     #rclpy.spin(kidnapDetector)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    #hazardDetector.destroy_node()
-    proximityDetector.destroy_node()
+    hazarddetector.destroy_node()
+    #proximityDetector.destroy_node()
     #kidnapDetector.destroy_node()
     rclpy.shutdown()
 
