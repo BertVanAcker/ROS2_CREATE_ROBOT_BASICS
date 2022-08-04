@@ -137,11 +137,11 @@ class DockerNode(Node):
         goal_msg = DockServo.Goal()
         self.dock_action_client.wait_for_server()
 
-        self._send_goal_future = self._action_client.send_goal_async(goal_msg, feedback_callback=self.feedback_callback)
+        self._send_goal_future = self.dock_action_client.send_goal_async(goal_msg, feedback_callback=self.feedback_callback)
         self._send_goal_future.add_done_callback(self.goal_response_callback)
 
         while self.status != GoalStatus.STATUS_SUCCEEDED:
-            rclpy.spin_once(self)
+            rclpy.spin_once(self.dock_action_client)
 
         self.state = State.DOCKED
 
