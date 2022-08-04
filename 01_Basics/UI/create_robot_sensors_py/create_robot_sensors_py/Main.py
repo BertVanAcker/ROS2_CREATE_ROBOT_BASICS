@@ -45,8 +45,7 @@ class HazardDetector(Node):
                 self.get_logger().info('Robot wheels are not touching the ground')
             elif hazard.type == 5:
                 self.get_logger().info('Robot detects an object very close')
-            else:
-                self.get_logger().info('No hazard detected')
+                
 class ProximityDetector(Node):
 
     def __init__(self):
