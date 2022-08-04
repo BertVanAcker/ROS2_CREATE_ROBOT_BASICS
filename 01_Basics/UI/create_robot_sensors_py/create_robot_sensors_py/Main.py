@@ -77,7 +77,7 @@ def main(args=None):
 
     #hazardDetector = HazardDetector()
     #proximityDetector = ProximityDetector()
-    kidnapDetector = KidnapDetector
+    kidnapDetector = KidnapDetector()
 
     #rclpy.spin(hazardDetector)
     #rclpy.spin(proximityDetector)
