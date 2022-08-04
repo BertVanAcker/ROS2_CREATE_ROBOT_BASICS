@@ -117,27 +117,33 @@ class DockerNode(Node):
         else:
             self.state = State.UNDOCKED
 
-
-    
     # Undock action
     def undock(self):
-        """Perform Undock action."""
-        self.get_logger().info('Undocking the robot...')
-        self.undock_send_goal()
+        self.undock_action_client.wait_for_server()
+        undock_goal_result = self.undock_action_client.send_goal(Undock.Goal())
+        if undock_goal_result.result.is_docked:
+            print('Undocking failed')
+        self.state = State.UNDOCKED
+
+    # Undock action
+    #def undock(self):
+    #    """Perform Undock action."""
+    #    self.get_logger().info('Undocking the robot...')
+    #    self.undock_send_goal()
 
             
-    def undock_send_goal(self):
-        self.get_logger().info('Sending goal...')
-        goal_msg = Undock.Goal()
-        self.undock_action_client.wait_for_server()
-        self.goal_future = self.undock_action_client.send_goal_async(goal_msg)
-        
-        self.setLights([self.yellow, self.yellow, self.yellow, self.yellow, self.yellow, self.yellow])
-        while rclpy.ok() and not self.goal_future.done():
-            rclpy.spin_once(self, timeout_sec=0.01)
-            self.get_logger().info("Wating for action to finish")
+    #def undock_send_goal(self):
+    #    self.get_logger().info('Sending goal...')
+    #    goal_msg = Undock.Goal()
+    #    self.undock_action_client.wait_for_server()
+    #    self.goal_future = self.undock_action_client.send_goal_async(goal_msg)
+    #
+    #    self.setLights([self.yellow, self.yellow, self.yellow, self.yellow, self.yellow, self.yellow])
+    #    while rclpy.ok() and not self.goal_future.done():
+    #        rclpy.spin_once(self, timeout_sec=0.01)
+    #        self.get_logger().info("Wating for action to finish")
 
-        self.state = State.UNDOCKED
+    #   self.state = State.UNDOCKED
     
 
     def dock(self):
@@ -201,7 +207,7 @@ def main(args=None):
     # Allow time for other nodes to start
     time.sleep(5)
 
-    print('Running FollowBot...\n')
+    print('Running Docking node...\n')
 
     try:
         node.run()
