@@ -45,7 +45,7 @@ class HazardDetector(Node):
 
     def hazard_callback(self, msg):
         #identification of the robot hazards
-        for hazard in msg.HazardDetection:
+        for hazard in msg:
             if hazard.type == HAZARDS.BACKUP_LIMIT:
                 self.get_logger().info('Robot is in backup limit')
             elif hazard.type == HAZARDS.BUMP:
@@ -68,8 +68,8 @@ class ProximityDetector(Node):
 
     def proximity_callback(self, msg):
         #identification of the proximity per sensor
-        for i in range(len(msg.IrIntensity)):
-            self.get_logger().info("Sensor ["+i.__str__()+'] - proximity level: '+msg.IrIntensity.value.__str__())
+        for i in range(len(msg)):
+            self.get_logger().info("Sensor ["+i.__str__()+'] - proximity level: '+msg[i].value.__str__())
 
 
 
@@ -77,18 +77,18 @@ def main(args=None):
     rclpy.init(args=args)
 
     hazardDetector = HazardDetector()
-    proximityDetector = ProximityDetector()
+    #proximityDetector = ProximityDetector()
     kidnapDetector = KidnapDetector()
 
     rclpy.spin(hazardDetector)
-    rclpy.spin(proximityDetector)
+    #rclpy.spin(proximityDetector)
     rclpy.spin(kidnapDetector)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
     hazardDetector.destroy_node()
-    proximityDetector.destroy_node()
+    #proximityDetector.destroy_node()
     kidnapDetector.destroy_node()
     rclpy.shutdown()
 
