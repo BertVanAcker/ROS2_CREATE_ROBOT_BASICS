@@ -33,9 +33,7 @@ class HazardDetector(Node):
         #identification of the robot hazards
         for hazard in msg.detections:
 
-            if hazard.type == 0:
-                self.get_logger().info('Robot is in backup limit')
-            elif hazard.type == 1:
+            if hazard.type == 1:
                 self.get_logger().info('Robot is bumped')
             elif hazard.type == 2:
                 self.get_logger().info('Robot detected a cliff')
@@ -45,7 +43,7 @@ class HazardDetector(Node):
                 self.get_logger().info('Robot wheels are not touching the ground')
             elif hazard.type == 5:
                 self.get_logger().info('Robot detects an object very close')
-                
+
 class ProximityDetector(Node):
 
     def __init__(self):
@@ -69,7 +67,7 @@ def main(args=None):
 
     rclpy.spin(hazarddetector)
     #rclpy.spin(proximityDetector)
-    #rclpy.spin(kidnapDetector)
+    rclpy.spin(kidnapDetector)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
