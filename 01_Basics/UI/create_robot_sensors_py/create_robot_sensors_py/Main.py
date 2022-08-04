@@ -44,9 +44,10 @@ class HazardDetector(Node):
         self.subscription  # prevent unused variable warning
 
     def hazard_callback(self, msg):
-        print(msg.detections.__str__())
+
         #identification of the robot hazards
         for hazard in msg.detections:
+            print(hazard.__str__())
             if hazard.type == HAZARDS.BACKUP_LIMIT:
                 self.get_logger().info('Robot is in backup limit')
             elif hazard.type == HAZARDS.BUMP:
