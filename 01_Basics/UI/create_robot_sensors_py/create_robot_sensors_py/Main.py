@@ -78,18 +78,18 @@ def main(args=None):
 
     hazardDetector = HazardDetector()
     #proximityDetector = ProximityDetector()
-    kidnapDetector = KidnapDetector()
+    #kidnapDetector = KidnapDetector()
 
     rclpy.spin(hazardDetector)
     #rclpy.spin(proximityDetector)
-    rclpy.spin(kidnapDetector)
+    #rclpy.spin(kidnapDetector)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
     hazardDetector.destroy_node()
     #proximityDetector.destroy_node()
-    kidnapDetector.destroy_node()
+    #kidnapDetector.destroy_node()
     rclpy.shutdown()
 
 
