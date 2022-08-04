@@ -168,61 +168,33 @@ class DockerNode(Node):
         self.get_logger().info('Received feedback: {0}'.format(feedback.partial_sequence))
 
 
-    # def dock_send_goal(self):
-    #     goal_msg = DockServo.Goal()
-    #     self.dock_action_client.wait_for_server()
-    #     goal_future = self.dock_action_client.send_goal_async(goal_msg)
-    #
-    #     rclpy.spin_until_future_complete(self, goal_future)
-    #
-    #     self.dock_goal_handle = goal_future.result()
-    #
-    #     if not self.dock_goal_handle.accepted:
-    #         self.get_logger().info('Docking of the robot FAILED - Dock goal rejected')
-    #         return
-    #
-    #     self.dock_result_future = self.dock_goal_handle.get_result_async()
-    #
-    # def isDockComplete(self):
-    #     """
-    #     Get status of Dock action.
-    #     :return: ``True`` if docked, ``False`` otherwise.
-    #     """
-    #     if self.dock_result_future is None or not self.dock_result_future:
-    #         return True
-    #
-    #     rclpy.spin_until_future_complete(self, self.dock_result_future, timeout_sec=0.1)
-    #
-    #     if self.dock_result_future.result():
-    #         self.dock_status = self.dock_result_future.result().status
-    #         if self.dock_status != GoalStatus.STATUS_SUCCEEDED:
-    #             self.info(f'Goal with failed with status code: {self.status}')
-    #             return True
-    #     else:
-    #         return False
-    #
-    #     self.get_logger().info('Docking of the robot SUCCEEDED')
-    #     return True
-
 
 
 def main(args=None):
 
+
     rclpy.init(args=args)
 
-    Lights = None
+    node = DockerNode()
+
+    # Spin rclpy on separate thread
+    thread = threading.Thread(target=rclpy.spin, args=(node,), daemon=True)
+    thread.start()
+
+    # Allow time for other nodes to start
+    time.sleep(5)
+
+    print('Running Docking node...\n')
+
     try:
-        node = DockerNode()
-        rclpy.spin(node)
+        node.run()
     except KeyboardInterrupt:
-        print('Caught keyboard interrupt')
-    finally:
-        # Destroy the node explicitly
-        # (optional - otherwise it will be done automatically
-        # when the garbage collector destroys the node object)
-        if node:
-            node.destroy_node()
-        rclpy.shutdown()
+        pass
+
+    node.destroy_node()
+    rclpy.shutdown()
+
+    thread.join()
 
 
 
