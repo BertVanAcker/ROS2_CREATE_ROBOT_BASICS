@@ -35,7 +35,7 @@ class HazardDetector(Node):
 
             if hazard.type == 0:
                 self.get_logger().info('Robot is in backup limit')
-            elif hazard.type == 1
+            elif hazard.type == 1:
                 self.get_logger().info('Robot is bumped')
             elif hazard.type == 2:
                 self.get_logger().info('Robot detected a cliff')
