@@ -45,7 +45,7 @@ class HazardDetector(Node):
 
     def hazard_callback(self, msg):
         #identification of the robot hazards
-        for hazard in msg:
+        for hazard in msg.detections:
             if hazard.type == HAZARDS.BACKUP_LIMIT:
                 self.get_logger().info('Robot is in backup limit')
             elif hazard.type == HAZARDS.BUMP:
@@ -68,8 +68,8 @@ class ProximityDetector(Node):
 
     def proximity_callback(self, msg):
         #identification of the proximity per sensor
-        for i in range(len(msg)):
-            self.get_logger().info("Sensor ["+i.__str__()+'] - proximity level: '+msg[i].value.__str__())
+        for i in range(len(msg.readings)):
+            self.get_logger().info("Sensor ["+i.__str__()+'] - proximity level: '+msg.readings[i].value.__str__())
 
 
 
