@@ -89,7 +89,7 @@ class DockerNode(Node):
 
         while True:
             self.stateMachine()
-            time.sleep(0.1)
+            time.sleep(0.01)
 
     # ____________________________BUTTONS____________________________#
     def button_callback(self, msg):
@@ -136,53 +136,13 @@ class DockerNode(Node):
             print('Undocking failed')
         self.state = State.UNDOCKED
 
-
-    
-
+    # Undock action
     def dock(self):
-        """Perform Undock action."""
-        self.get_logger().info('Docking the robot...')
-
-        if not self.dock_action_client.wait_for_server(timeout_sec=5.0):
-            self.get_logger().error('No action server available')
-            return -1
-
-        goal_msg = DockServo.Goal()
-
-        self.action_done_event.clear()
-
-        self._send_goal_future = self.dock_action_client.send_goal_async(goal_msg, feedback_callback=self.feedback_callback)
-        self._send_goal_future.add_done_callback(self.goal_response_callback)
-
-        # Wait for action to be done
-        self.action_done_event.wait()
-
+        self.undock_action_client.wait_for_server()
+        undock_goal_result = self.undock_action_client.send_goal(Undock.Goal())
+        if undock_goal_result.result.is_docked:
+            print('Undocking failed')
         self.state = State.DOCKED
-
-
-    def goal_response_callback(self, future):
-        goal_handle = future.result()
-        if not goal_handle.accepted:
-            self.get_logger().info('Goal rejected :(')
-            return
-
-        self.get_logger().info('Goal accepted :)')
-
-        self._get_result_future = goal_handle.get_result_async()
-        self._get_result_future.add_done_callback(self.get_result_callback)
-
-    def get_result_callback(self, future):
-        result = future.result().result
-        self.get_logger().info('Result: {0}'.format(result.sequence))
-        self.status = GoalStatus.STATUS_SUCCEEDED
-
-        # Signal that action is done
-        self.action_done_event.set()
-
-
-    def feedback_callback(self, feedback_msg):
-        feedback = feedback_msg.feedback
-        self.get_logger().info('Received feedback: {0}'.format(feedback.partial_sequence))
 
 
 
