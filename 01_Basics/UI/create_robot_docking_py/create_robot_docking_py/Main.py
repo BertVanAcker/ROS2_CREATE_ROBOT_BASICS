@@ -1,7 +1,11 @@
 import threading
+from threading import Event
+
 import time
 import rclpy
 from rclpy.node import Node
+from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.executors import MultiThreadedExecutor
 from rclpy.action import ActionClient
 from action_msgs.msg import GoalStatus
 from rclpy.qos import qos_profile_sensor_data, qos_profile_system_default
@@ -34,6 +38,11 @@ class DockerNode(Node):
         self.state = State.UNDEFINED
         self.status = GoalStatus.STATUS_EXECUTING
 
+        # -- multi-threading setup -- #
+        self.action_done_event = Event()    #to communicate between threads
+        self.callback_group = ReentrantCallbackGroup()
+
+
         self.red = LedColor(red=255, green=0, blue=0)
         self.green = LedColor(red=0, green=255, blue=0)
         self.blue = LedColor(red=0, green=0, blue=255)
@@ -56,8 +65,8 @@ class DockerNode(Node):
         self.lights_publisher  # prevent unused variable warning
 
         # -- actions -- #
-        self.undock_action_client = ActionClient(self, Undock, '/undock')
-        self.dock_action_client = ActionClient(self, DockServo, '/dock')
+        self.undock_action_client = ActionClient(self, Undock, 'undock',callback_group=self.callback_group)
+        self.dock_action_client = ActionClient(self, DockServo, 'dock',callback_group=self.callback_group)
 
         self.get_logger().info('Docking node started.')
 
@@ -134,14 +143,19 @@ class DockerNode(Node):
         """Perform Undock action."""
         self.get_logger().info('Docking the robot...')
 
+        if not self.dock_action_client.wait_for_server(timeout_sec=5.0):
+            self.get_logger().error('No action server available')
+            return -1
+
         goal_msg = DockServo.Goal()
-        self.dock_action_client.wait_for_server()
+
+        self.action_done_event.clear()
 
         self._send_goal_future = self.dock_action_client.send_goal_async(goal_msg, feedback_callback=self.feedback_callback)
         self._send_goal_future.add_done_callback(self.goal_response_callback)
 
-        while self.status != GoalStatus.STATUS_SUCCEEDED:
-            rclpy.spin_once(self)
+        # Wait for action to be done
+        self.action_done_event.wait()
 
         self.state = State.DOCKED
 
@@ -162,6 +176,9 @@ class DockerNode(Node):
         self.get_logger().info('Result: {0}'.format(result.sequence))
         self.status = GoalStatus.STATUS_SUCCEEDED
 
+        # Signal that action is done
+        self.action_done_event.set()
+
 
     def feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback
@@ -172,29 +189,38 @@ class DockerNode(Node):
 
 def main(args=None):
 
-
     rclpy.init(args=args)
 
     node = DockerNode()
 
-    # Spin rclpy on separate thread
-    thread = threading.Thread(target=rclpy.spin, args=(node,), daemon=True)
-    thread.start()
+    executor = MultiThreadedExecutor()
+    rclpy.spin(node, executor)
 
-    # Allow time for other nodes to start
-    time.sleep(5)
-
-    print('Running Docking node...\n')
-
-    try:
-        node.run()
-    except KeyboardInterrupt:
-        pass
-
-    node.destroy_node()
     rclpy.shutdown()
 
-    thread.join()
+
+    # rclpy.init(args=args)
+    #
+    # node = DockerNode()
+    #
+    # # Spin rclpy on separate thread
+    # thread = threading.Thread(target=rclpy.spin, args=(node,), daemon=True)
+    # thread.start()
+    #
+    # # Allow time for other nodes to start
+    # time.sleep(5)
+    #
+    # print('Running Docking node...\n')
+    #
+    # try:
+    #     node.run()
+    # except KeyboardInterrupt:
+    #     pass
+    #
+    # node.destroy_node()
+    # rclpy.shutdown()
+    #
+    # thread.join()
 
 
 
