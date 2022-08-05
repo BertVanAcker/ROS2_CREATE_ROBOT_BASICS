@@ -9,9 +9,9 @@ def main():
     navigator = CreatBotNavigator()
 
     # Start on dock
-    if not navigator.getDockedStatus():
-        navigator.info('Docking before intialising pose')
-        navigator.dock()
+    #if not navigator.getDockedStatus():
+    #    navigator.info('Docking before intialising pose')
+    #    navigator.dock()
 
     # Set initial pose
     initial_pose = navigator.getPoseStamped([0.0, 0.0], CreateBotDirections.NORTH)
