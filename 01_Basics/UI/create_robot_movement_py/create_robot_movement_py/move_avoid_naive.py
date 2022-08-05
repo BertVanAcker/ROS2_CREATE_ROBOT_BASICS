@@ -35,7 +35,7 @@ class BaseMotion(Node):
         # -- system attributes -- #
         self.is_docked = False
         self.state = State.UNKNOWN
-        self.safeDistance = 1200
+        self.safeDistance = 800
 
         # -- multi-threading setup -- #
 
@@ -76,6 +76,7 @@ class BaseMotion(Node):
         clearPath = True
         for i in range(len(msg.readings)):
             if msg.readings[i].value> self.safeDistance:    #one of the sensors closer than safeDistance, search for free path
+                self.get_logger().info("Sensor [" + i.__str__() + '] - proximity level: ' + msg.readings[i].value.__str__())
                 clearPath = False
                 self.state = State.SEARCHING_CLEARPATH
         if clearPath:
@@ -90,6 +91,10 @@ class BaseMotion(Node):
         msg.linear.x = linear_x
 
         self.cmd_vel_pub.publish(msg)
+
+    #command the robot to stop
+    def stop(self):
+        self.drive(0.0, 0.0)
 
     # Undock action
     def undock(self):
@@ -109,13 +114,13 @@ class BaseMotion(Node):
             self.drive(0.3, 0.0)
         elif self.state == State.SEARCHING_CLEARPATH:
             #continously turning slowly
-            self.drive(0.0, 0.3)
+            self.drive(0.0, 0.5)
         elif self.state == State.BUMPED:
             #backup a bit and turn right
-            self.drive(0.3, 0.0)
-            time.sleep(0.5)
+            self.drive(-0.3, 0.0)
+            time.sleep(1)
             self.drive(0.0, 0.6)
-            time.sleep(0.5)
+            time.sleep(1)
             self.state = State.DRIVING
 
     def run(self):
