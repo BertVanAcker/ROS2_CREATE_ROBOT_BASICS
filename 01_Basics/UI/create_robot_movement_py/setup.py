@@ -24,7 +24,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'Movement_basic = create_robot_movement_py.move_simple:main'
+            'Movement_basic = create_robot_movement_py.move_simple:main',
+            'Avoidance_naive = create_robot_movement_py.move_avoid_naive:main'
         ],
     },
 )

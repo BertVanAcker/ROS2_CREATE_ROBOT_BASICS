@@ -24,7 +24,8 @@ class State(Enum):
     DOCKED = 0
     DRIVING = 1
     BUMPED = 2
-    UNKNOWN = 3
+    SEARCHING_CLEARPATH = 3
+    UNKNOWN = 4
 
 class BaseMotion(Node):
 
@@ -34,13 +35,18 @@ class BaseMotion(Node):
         # -- system attributes -- #
         self.is_docked = False
         self.state = State.UNKNOWN
+        self.safeDistance = 1200
 
         # -- multi-threading setup -- #
 
 
         # -- input -- #
         dock_sub = self.create_subscription(Dock,'/dock', self.dockCallback,qos_profile_sensor_data)
+
         self.subscription = self.create_subscription(HazardDetectionVector, 'hazard_detection', self.hazard_callback,qos_profile_sensor_data)
+        self.subscription  # prevent unused variable warning
+
+        self.subscription = self.create_subscription(IrIntensityVector, 'ir_intensity', self.proximity_callback,qos_profile_sensor_data)
         self.subscription  # prevent unused variable warning
 
         # -- output -- #
@@ -64,6 +70,18 @@ class BaseMotion(Node):
             if hazard.type == 1:
                 self.get_logger().info('Robot is bumped')
                 self.state = State.BUMPED
+
+    def proximity_callback(self, msg):
+        #determine if clearpath or not
+        clearPath = True
+        for i in range(len(msg.readings)):
+            if msg.readings[i].value> self.safeDistance:    #one of the sensors closer than safeDistance, search for free path
+                clearPath = False
+                self.state = State.SEARCHING_CLEARPATH
+        if clearPath:
+            self.state = State.DRIVING
+        else:
+            self.state = State.SEARCHING_CLEARPATH
 
     # Send cmd_vel to Create 3
     def drive(self, linear_x, angular_z):
@@ -89,6 +107,9 @@ class BaseMotion(Node):
         elif self.state == State.DRIVING:
             #continously driving straight
             self.drive(0.3, 0.0)
+        elif self.state == State.SEARCHING_CLEARPATH:
+            #continously turning slowly
+            self.drive(0.0, 0.3)
         elif self.state == State.BUMPED:
             #backup a bit and turn right
             self.drive(0.3, 0.0)
