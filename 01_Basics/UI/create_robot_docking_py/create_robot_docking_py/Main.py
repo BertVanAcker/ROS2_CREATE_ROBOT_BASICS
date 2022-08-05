@@ -188,39 +188,28 @@ class DockerNode(Node):
 
 
 def main(args=None):
-
     rclpy.init(args=args)
 
     node = DockerNode()
 
-    executor = MultiThreadedExecutor()
-    rclpy.spin(node, executor)
+    # Spin rclpy on separate thread
+    thread = threading.Thread(target=rclpy.spin, args=(node,), daemon=True)
+    thread.start()
 
+    # Allow time for other nodes to start
+    time.sleep(5)
+
+    print('Running Docking node...\n')
+
+    try:
+        node.run()
+    except KeyboardInterrupt:
+        pass
+
+    node.destroy_node()
     rclpy.shutdown()
 
-
-    # rclpy.init(args=args)
-    #
-    # node = DockerNode()
-    #
-    # # Spin rclpy on separate thread
-    # thread = threading.Thread(target=rclpy.spin, args=(node,), daemon=True)
-    # thread.start()
-    #
-    # # Allow time for other nodes to start
-    # time.sleep(5)
-    #
-    # print('Running Docking node...\n')
-    #
-    # try:
-    #     node.run()
-    # except KeyboardInterrupt:
-    #     pass
-    #
-    # node.destroy_node()
-    # rclpy.shutdown()
-    #
-    # thread.join()
+    thread.join()
 
 
 
