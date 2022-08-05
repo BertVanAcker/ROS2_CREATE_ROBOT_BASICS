@@ -1,6 +1,6 @@
 import rclpy
 
-from create3_robot_movement_py.CreateBotNavigator import CreateBotDirections, CreatBotNavigator
+from create_robot_movement_py.CreateBotNavigator import CreateBotDirections, CreatBotNavigator
 
 
 def main():
