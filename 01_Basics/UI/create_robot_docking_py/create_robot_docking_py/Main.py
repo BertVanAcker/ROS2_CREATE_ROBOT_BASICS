@@ -138,9 +138,9 @@ class DockerNode(Node):
 
     # Undock action
     def dock(self):
-        self.undock_action_client.wait_for_server()
-        undock_goal_result = self.undock_action_client.send_goal(Undock.Goal())
-        if undock_goal_result.result.is_docked:
+        self.dock_action_client.wait_for_server()
+        dock_goal_result = self.dock_action_client.send_goal(DockServo.Goal())
+        if not dock_goal_result.result.is_docked:
             print('Undocking failed')
         self.state = State.DOCKED
 
