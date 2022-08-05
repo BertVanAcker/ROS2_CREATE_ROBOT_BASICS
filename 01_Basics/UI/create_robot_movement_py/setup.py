@@ -25,7 +25,8 @@ setup(
     entry_points={
         'console_scripts': [
             'Movement_basic = create_robot_movement_py.move_simple:main',
-            'Avoidance_naive = create_robot_movement_py.move_avoid_naive:main'
+            'Avoidance_naive = create_robot_movement_py.move_avoid_naive:main',
+            'nav_to_pose = create_robot_movement_py.nav_to_pose:main'
         ],
     },
 )
