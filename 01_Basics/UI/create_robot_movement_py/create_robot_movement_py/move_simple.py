@@ -45,7 +45,7 @@ class BaseMotion(Node):
 
         # -- output -- #
         self.lights_publisher = self.create_publisher(LightringLeds, 'cmd_lightring', 10)
-        self.vel_publisher = self.create_publisher(Twist, 'cmd_vel', 10)
+        self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', qos_profile_system_default)
 
         # -- actions -- #
         self.undock_action_client = ActionClient(self, Undock, '/undock')
@@ -102,6 +102,8 @@ class BaseMotion(Node):
         if self.is_docked:
             print('Undocking')
             self.undock()
+            self.state = State.DRIVING
+        else:
             self.state = State.DRIVING
 
         while True:
