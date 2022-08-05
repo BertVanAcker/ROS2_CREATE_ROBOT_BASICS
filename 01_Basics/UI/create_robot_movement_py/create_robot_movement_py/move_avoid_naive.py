@@ -135,7 +135,7 @@ class BaseMotion(Node):
         while True:
             self.stateMachine()
             print('{0: <20}'.format(self.state), end='\r')
-            time.sleep(0.1)
+            time.sleep(0.01)
 
 def main(args=None):
     rclpy.init(args=args)
