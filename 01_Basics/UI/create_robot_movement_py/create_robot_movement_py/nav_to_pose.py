@@ -1,6 +1,6 @@
 import rclpy
 
-from create_robot_movement_py.CreateBotNavigator import CreateBotDirections, CreatBotNavigator
+from turtlebot4_navigation.turtlebot4_navigation import CreateBotDirections, CreatBotNavigator
 
 
 def main():

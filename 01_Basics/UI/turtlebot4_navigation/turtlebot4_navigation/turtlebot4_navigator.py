@@ -36,7 +36,7 @@ from rclpy.duration import Duration
 from rclpy.qos import qos_profile_sensor_data, qos_profile_system_default
 
 
-class CreateBotDirections(IntEnum):
+class TurtleBot4Directions(IntEnum):
     NORTH = 0
     NORTH_WEST = 45
     WEST = 90
@@ -47,7 +47,7 @@ class CreateBotDirections(IntEnum):
     NORTH_EAST = 315
 
 
-class CreatBotNavigator(BasicNavigator):
+class TurtleBot4Navigator(BasicNavigator):
     is_docked = None
     creating_path = False
 
